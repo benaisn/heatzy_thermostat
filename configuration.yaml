@@ -1,0 +1,32 @@
+#create a fake switch that will turn on the heatzy radiator (heat) and turn off (eco or cool)
+switch:
+  - platform: template
+    switches:
+      chauffage_rdc:
+        friendly_name: 'Chauffage Rez de chaussée'
+        icon_template: mdi:radiator
+        value_template: "{{ is_state_attr('climate.rdc', 'operation_mode', 'heat') }}"
+        turn_on:
+          service: climate.set_operation_mode
+          data:
+            entity_id: climate.rdc
+            operation_mode: 'heat'
+        turn_off:
+          service: climate.set_operation_mode
+          data:
+            entity_id: climate.rdc
+            operation_mode: 'eco'
+ 
+ #This custom thermostat use an external sensor (in this case a Philips Hue sensor), and the switch defined above.
+ climate:
+  - platform: generic_thermostat
+    name: Thermostat Rez de Chaussée
+    heater: switch.chauffage_rdc
+    target_sensor: sensor.escalier_temperature
+    min_temp: 17
+    max_temp: 22
+    ac_mode: false
+    target_temp: 20
+    initial_operation_mode: "off"
+    away_temp: 16
+    hot_tolerance: 0
